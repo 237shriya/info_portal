@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Portal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        
+        .animate-scroll {
+            animation: scroll-up 10s linear infinite;
+        }
+        @keyframes scroll-up {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(-100%); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <header class="bg-white text-gray-900 shadow-md">
+        <div class="container mx-auto bg-white py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <img src="pics/logo iit jammu.png" alt="College Logo" class="h-20">
+                   
+                </div>
+            </div>
+        </div>
+
+        <nav class="bg-blue-900 py-2">
+            <div class="container mx-auto">
+                <ul class="flex justify-center space-x-6">
+                    <li><a href="#" class="text-white hover:underline">Home</a></li>
+                    <li><a href="class-notes.html" class="text-white hover:underline">Class Notes</a></li>
+                    <li><a href="#footer" class="text-white hover:underline">Contact</a></li> 
+                    <li><a href="admin-login.html" class="text-white hover:underline">Admin Login</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto py-8">
+    
+        <section class="bg-blue-300 p-12 rounded-lg mb-8 shadow-lg text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900">Welcome to CDP in Network and Mobile Security</h1>
+            <p class="text-lg mt-4 text-gray-700">Enhance your skills with our advanced programme.</p>
+        </section>
+
+        
+        <section class="bg-white p-8 rounded-lg shadow-lg mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-gray-900">Competency Development Programme</h2>
+            <div class="flex flex-col md:flex-row items-center">
+                <img src="pics/cdp.jpg" alt="Competency Development" class="w-full md:w-1/2 rounded-lg shadow-md mb-6 md:mb-0 md:mr-8">
+                <div class="md:w-1/2">
+                    <p class="mb-4 text-gray-600">Our Competency Development Programme in Network and Mobile Security is designed to equip participants with advanced skills in cybersecurity. This programme covers various aspects of network security, mobile security, threat analysis, and mitigation strategies to ensure a comprehensive understanding of modern security challenges.</p>
+                    <p class="mb-4 text-gray-600">Participants will engage in hands-on workshops, real-world scenarios, and expert sessions to develop their proficiency in protecting and securing network infrastructures and mobile applications. The programme aims to bridge the gap between theoretical knowledge and practical skills.</p>
+                </div>
+            </div>
+        </section>
+
+        
+        <section class="bg-gray-100 p-8 rounded-lg shadow-lg mb-8">
+            <h2 class="text-3xl font-bold mb-6 text-gray-900">Latest Updates</h2>
+            <div class="news-ticker-wrapper relative h-48 overflow-hidden bg-white rounded-lg shadow-md">
+                <div class="news-ticker absolute inset-0 flex flex-col animate-scroll">
+                    <article class="bg-gray-200 p-6 rounded-lg shadow-md mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">News Title 1</h3>
+                        <p class="text-gray-700 mt-2">A brief summary of the news article goes here.</p>
+                    </article>
+                    <article class="bg-gray-200 p-6 rounded-lg shadow-md mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900">News Title 2</h3>
+                        <p class="text-gray-700 mt-2">Another brief summary of a different news article.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        
+        <div id="class-notes-container"></div>
+    </main>
+
+    <footer id ="footer" class="bg-gray-900 text-white py-6">
+        <div class="container mx-auto text-center">
+            <p class="text-gray-400 mb-4">
+                Contact Details: <br>
+                Indian Institute of Technology Jammu<br>
+                Jagti, NH-44 , PO Nagrota<br>
+                Jammu - 181 221 J&K, India.<br>
+            </p>
+            <p>&copy; 2024 IIT Jammu. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="scripts.js"></script>
+    <script>
+       
+        fetch('class-notes.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('class-notes-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error loading class notes:', error));
+
+       
+        function filterNotes() {
+            const searchInput = document.getElementById('search-notes')?.value.toLowerCase() || '';
+            const categoryFilter = document.getElementById('filter-category')?.value.toLowerCase() || '';
+            const notes = document.querySelectorAll('#notes-list .bg-white');
+
+            notes.forEach(note => {
+                const title = note.querySelector('h3')?.textContent.toLowerCase() || '';
+                const category = note.dataset.category ? note.dataset.category.toLowerCase() : '';
+
+                if ((title.includes(searchInput) || searchInput === '') && (category.includes(categoryFilter) || categoryFilter === '')) {
+                    note.style.display = '';
+                } else {
+                    note.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
