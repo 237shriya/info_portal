@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Organize Files</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .file-preview {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .file-preview img {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-3xl font-bold mb-6 text-gray-900 text-center">Upload Files</h2>
+        <form id="upload-form" action="/upload-files" method="post" enctype="multipart/form-data" class="space-y-4">
+            <div id="file-inputs">
+                <div class="flex flex-col file-input-container">
+                    <label class="text-gray-700 font-medium mb-1">Select File</label>
+                    <input type="file" name="files[]" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="previewFile(this)">
+                </div>
+            </div>
+            <button type="button" onclick="addFileInput()" class="bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">Add Another File</button>
+            <div id="file-preview" class="file-preview"></div>
+            <div class="flex flex-col">
+                <label for="upload-date" class="text-gray-700 font-medium mb-1">Date</label>
+                <input type="date" id="upload-date" name="upload_date" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <button type="submit" class="bg-blue-900 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition">Upload</button>
+        </form>
+    </div>
+
+    <script>
+        function addFileInput() {
+            const fileInputsContainer = document.getElementById('file-inputs');
+            const newFileInput = document.createElement('div');
+            newFileInput.classList.add('flex', 'flex-col', 'file-input-container');
+            newFileInput.innerHTML = `
+                <label class="text-gray-700 font-medium mb-1">Select File</label>
+                <input type="file" name="files[]" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="previewFile(this)">
+            `;
+            fileInputsContainer.appendChild(newFileInput);
+        }
+
+        function previewFile(input) {
+            const file = input.files[0];
+            const previewContainer = document.getElementById('file-preview');
+            
+            
+            const filePreviews = Array.from(previewContainer.children);
+            filePreviews.forEach(preview => {
+                if (preview.dataset.inputId === input.id) {
+                    previewContainer.removeChild(preview);
+                }
+            });
+
+            if (file) {
+                const fileReader = new FileReader();
+                fileReader.onload = function(event) {
+                    const fileUrl = event.target.result;
+                    const fileElement = document.createElement('div');
+                    fileElement.classList.add('file-preview-item');
+                    fileElement.dataset.inputId = input.id;
+
+                    if (file.type.startsWith('image/')) {
+                        fileElement.innerHTML = `<img src="${fileUrl}" alt="${file.name}">`;
+                    } else {
+                        fileElement.innerHTML = `<p>${file.name}</p>`;
+                    }
+
+                    previewContainer.appendChild(fileElement);
+                };
+                fileReader.readAsDataURL(file);
+            }
+        }
+    </script>
+</body>
+</html>
