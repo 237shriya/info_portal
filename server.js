@@ -6,25 +6,23 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 
-// Middleware to parse URL-encoded bodies and JSON
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/'); // Folder where files will be stored
+        cb(null, 'uploads/');
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Append timestamp to file name
-    }
+        cb(null, Date.now() + path.extname(file.originalname)); }
 });
 const upload = multer({ storage });
 
-// Ensure uploads directory exists
+
 if (!fs.existsSync('uploads')) {
     fs.mkdirSync('uploads');
 }
@@ -51,7 +49,6 @@ app.post('/register', (req, res) => {
             return res.status(500).send('Server error');
         }
 
-        
         db.query('INSERT INTO admin (username, password) VALUES (?, ?)', [username, hashedPassword], (err, result) => {
             if (err) {
                 console.error('Database query error:', err);
@@ -128,14 +125,48 @@ app.post('/materials/upload', upload.fields([
 
     res.redirect('/class-notes.html');
 });
+
 app.get('/class-notes.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'class-notes.html'));
 });
 
-
 // Handle getting materials
 app.get('/api/materials', (req, res) => {
     db.query('SELECT * FROM materials ORDER BY date DESC', (err, results) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).send('Server error');
+        }
+        res.json(results);
+    });
+});
+
+// Endpoints for managing news updates
+// Serve the admin news update form
+//app.get('/admin-news', (req, res) => {
+  //  res.sendFile(path.join(__dirname, 'public', 'admin-news.html'));
+//});
+
+
+// Add a news update
+app.post('/api/news', (req, res) => {
+    const { title, content } = req.body;
+
+    db.query('INSERT INTO news_updates (title, content) VALUES (?, ?)', [title, content], (err, result) => {
+        if (err) {
+            console.error('Database query error:', err);
+            return res.status(500).send('Server error');
+        }
+        res.redirect('/index.html');
+    });
+});
+app.get('/index.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Get all news updates
+app.get('/api/news', (req, res) => {
+    db.query('SELECT * FROM news_updates ORDER BY created_at DESC', (err, results) => {
         if (err) {
             console.error('Database query error:', err);
             return res.status(500).send('Server error');
